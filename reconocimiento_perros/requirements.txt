@@ -1,0 +1,9 @@
+tensorflow
+numpy
+opencv-python
+pillow
+customtkinter
+onnx
+tf2onnx
+scikit-learn
+matplotlib

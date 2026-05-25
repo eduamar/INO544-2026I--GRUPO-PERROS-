@@ -1,0 +1,20 @@
+<<<<<<< HEAD
+tensorflow
+numpy
+opencv-python
+pillow
+customtkinter
+onnx
+tf2onnx
+scikit-learn
+=======
+tensorflow
+numpy
+opencv-python
+pillow
+customtkinter
+onnx
+tf2onnx
+scikit-learn
+>>>>>>> c5142f95cd7ba704c49f253f2c61a70376ae8365
+matplotlib
