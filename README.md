@@ -5,7 +5,7 @@
 ---
 
 ## 👥 Integrantes y Roles
-* **Integrante 1:** [Simons ] - [Cédula] - *Rol: Ingeniero de Datos (Dataset y Preprocesamiento)*
+* **Integrante 1:** [Simons Briceño] - [30070589] - *Rol: Ingeniero de Datos (Dataset y Preprocesamiento)*
 * **Integrante 2:** [Anthony Bellorín] - [28448400] - *Rol: Arquitecto de IA (Modelado y Entrenamiento)*
 * **Integrante 3:** [Luna Castillo] - [31288025] - *Rol: Ingeniero de Despliegue (Exportación ONNX y Pruebas)*
 
