@@ -93,4 +93,4 @@ Para replicar el preprocesamiento y el entrenamiento del modelo:
 ```
 6. Ejecutar la aplicación:
 ```bash
-    python main.py
+    python app/main.py
