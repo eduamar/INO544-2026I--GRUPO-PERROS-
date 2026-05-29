@@ -1,48 +1,73 @@
-import onnxruntime as rt
+import onnxruntime as ort
 import numpy as np
 from PIL import Image
 
+
 class Predictor:
+
     def __init__(self):
-        # Carga el modelo (ajusta la ruta si es necesario)
-        self.sess = rt.InferenceSession("../model/modelo_perros.onnx")
-        self.input_name = self.sess.get_inputs()[0].name
-        # Ajusta esto a lo que tu modelo espera (ej. 224x224)
-        self.target_size = (224, 224)
 
-    def predecir(self, input_data):
-        """Acepta una ruta (string) o un objeto PIL Image."""
-        try:
-            if isinstance(input_data, str):
-                img = Image.open(input_data)
-            else:
-                img = input_data # Es un objeto PIL Image
-            
-            # --- Preprocesamiento (Ajustar según tu modelo) ---
-            img = img.resize(self.target_size)
-            img_arr = np.array(img).astype(np.float32)
-            # Asegurar 3 canales si es necesario (ej. si era escala de grises)
-            if img_arr.ndim == 2:
-                img_arr = np.stack((img_arr,)*3, axis=-1)
-            # Transponer de (H, W, C) a (C, H, W) si ONNX lo requiere
-            img_arr = np.transpose(img_arr, (2, 0, 1))
-            # Añadir dimensión de batch (1, C, H, W)
-            img_arr = np.expand_dims(img_arr, axis=0)
-            # Normalización (ej. dividir por 255 o restar media)
-            # img_arr = (img_arr / 255.0 - mean) / std
+        self.session = ort.InferenceSession(
+            "../model/modelo_perros.onnx"
+        )
 
-            # --- Inferencia ---
-            pred = self.sess.run(None, {self.input_name: img_arr})[0]
-            
-            # --- Postprocesamiento ---
-            # Asumiendo que la salida es (1, clases) y que usas argmax
-            predicted_class_index = np.argmax(pred)
-            
-            # Ajustar la lógica según tus clases (ej. 0=no perro, 1=perro)
-            if predicted_class_index == 1:
-                return "🐶 ¡Es un perro!"
-            else:
-                return "🚫 No parece un perro."
+        self.input_name = self.session.get_inputs()[0].name
 
-        except Exception as e:
-            return f"Error en predicción: {str(e)}"
+    # =====================================
+    # PREPROCESAR IMAGEN PIL
+    # =====================================
+
+    def preprocesar_imagen(self, imagen):
+
+        imagen = imagen.convert("RGB")
+
+        imagen = imagen.resize((128, 128))
+
+        imagen = np.array(imagen).astype(np.float32)
+
+        imagen = imagen / 255.0
+
+        imagen = np.expand_dims(imagen, axis=0)
+
+        return imagen
+
+    # =====================================
+    # PREDECIR DESDE IMAGEN PIL
+    # =====================================
+
+    def predecir_imagen(self, imagen):
+
+        imagen = self.preprocesar_imagen(imagen)
+
+        resultado = self.session.run(
+            None,
+            {self.input_name: imagen}
+        )
+
+        probabilidad = float(resultado[0][0][0])
+
+        porcentaje = round(probabilidad * 100, 2)
+
+        if probabilidad >= 0.5:
+
+            return (
+                f"🐶 ES UN PERRO\n\n"
+                f"Confianza: {porcentaje}%"
+            )
+
+        else:
+
+            return (
+                f"❌ NO ES UN PERRO\n\n"
+                f"Confianza: {100 - porcentaje}%"
+            )
+
+    # =====================================
+    # PREDECIR DESDE RUTA
+    # =====================================
+
+    def predecir(self, ruta):
+
+        imagen = Image.open(ruta)
+
+        return self.predecir_imagen(imagen)
